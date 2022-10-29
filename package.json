@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "author": "Your Name <email@example.com>",
     "scripts": {
-        "start": "nodemon index.js"
+        "start": "nodemon ./src/index.js"
     },
     "dependencies": {
         "bcrypt": "^5.1.0",
