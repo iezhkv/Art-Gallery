@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { secret, saltRounds } = require('../constants');
 
-exports.register = async ({ username, password, repeatPassword }) => {
+exports.register = async ({ username, password, repeatPassword, address }) => {
     let user = await User.findOne({ username });
 
     if (user) {
@@ -12,6 +12,12 @@ exports.register = async ({ username, password, repeatPassword }) => {
             message: 'Username already exists'
         };
     }
+    if (!username) {
+        throw {
+            message: 'Username cannot be blank'
+        };
+    }
+  
 
     if (password !== repeatPassword) {
         throw {
@@ -29,6 +35,7 @@ exports.register = async ({ username, password, repeatPassword }) => {
     let createdUser = User.create({
         username,
         password: hashedPassword,
+        address,
     });
 
     return createdUser;
