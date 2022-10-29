@@ -28,11 +28,11 @@
             <a href="/">ArtGallery</a>
 
             <ul class="menu">
-                <li><a href="/">Gallery</a></li>
+                <li><a href="/publications">Gallery</a></li>
                 {{#if user}}
                  <!-- Logged users -->
                 <li><a href="/publications/create">Create Publication</a></li>
-                <li><a href="/auth/profile">Profile</a></li>
+                <li><a href="/auth/profile">User :{{user.username}}</a></li>
                 <li><a href="/auth/logout">Logout</a></li>
                 {{else}}
                 <!-- Guest users -->
