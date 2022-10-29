@@ -16,13 +16,19 @@ router.get('/:publicationId/details' , async (req, res) => {
 });
 
 router.get('/:publicationId/edit' ,isAuth, async (req, res, next) => {
-    const publication = await publicationService.getOne(req.params.publicationId);    
+    const publication = await publicationService.getOne(req.params.publicationId).lean();    
     //IsAuthor
     if (publication.author != req.user._id) {
         return next({massage: 'You are not authorized', status: 401});
     }
 
     res.render('publication/edit', {...publication});
+});
+
+router.post('/:publicationId/edit' ,isAuth, async (req, res, next) => {
+    await publicationService.update(req.params.publicationId, req.body);
+
+    res.redirect(`/publications/${req.params.publicationId}/details`);
 });
 
 
