@@ -11,9 +11,13 @@ router.get('/' , async (req, res) => {
 
 router.get('/:publicationId/details' , async (req, res) => {
     const publication = await publicationService.getOneDetailed(req.params.publicationId).lean();
-    const isAuthor = publication.author._id == req.user?._id;
+    const publication2 = await publicationService.getOneDetailed(req.params.publicationId);
 
-    res.render('publication/details', { ...publication, isAuthor });
+    const isAuthor = publication.author._id == req.user?._id;
+    const shared = publication2.usersShared.includes(req.user?._id);
+    console.log(shared);
+
+    res.render('publication/details', { ...publication, isAuthor, shared });
 });
 
 router.get('/:publicationId/edit' ,isAuth, async (req, res) => {
@@ -45,9 +49,6 @@ router.post('/create' ,isAuth, async (req, res) => {
 });
 router.post('/:publicationId/edit' ,isAuth, async (req, res) => {
     const publicationData = {...req.body, author: req.user._id};
-    console.log(req.params.publicationId);
-    console.log(publicationData);
-
     try {
         await publicationService.update(req.params.publicationId, publicationData);
         res.redirect(`/publications/${req.params.publicationId}/details`);
@@ -63,6 +64,21 @@ router.get('/:publicationId/delete' ,isAuth, async (req, res) => {
 
     if (isAuthor) {
         await publicationService.delete(req.params.publicationId);
+        res.redirect('/publications');
+    } else {
+        res.render('publication/details', { ...publication, error: 'Not authorized' });
+    }
+
+});
+
+router.get('/:publicationId/share' ,isAuth, async (req, res) => {
+    const publication = await publicationService.getOneDetailed(req.params.publicationId).lean();
+    const isAuthor = publication.author._id == req.user?._id;
+    const publicationData = {...req.body, usersShared: req.user._id};
+
+
+    if (!isAuthor) {
+        await publicationService.update(req.params.publicationId, publicationData);
         res.redirect('/publications');
     } else {
         res.render('publication/details', { ...publication, error: 'Not authorized' });
